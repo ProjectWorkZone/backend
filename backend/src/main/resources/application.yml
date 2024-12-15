@@ -1,0 +1,5 @@
+spring:
+    application:
+        name: workzone
+    autoconfigure:
+        exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
