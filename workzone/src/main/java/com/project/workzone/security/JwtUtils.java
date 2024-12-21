@@ -38,17 +38,17 @@ public class JwtUtils {
         this.userService = userService;
     }
 
-    public String generateToken(User user, TokenType tokenType) {
+    public String generateToken(UsernameEmailPasswordAuthenticationToken authentication, TokenType tokenType) {
         return generateToken(
-                String.valueOf(user.getId()),
-                user.getUsername(),
+                authentication.getId(),
+                authentication.getName(),
                 tokenType
         );
     }
 
-    public String generateToken(String id, String userName, TokenType tokenType) {
+    public String generateToken(Long id, String userName, TokenType tokenType) {
         JwtBuilder jwts = Jwts.builder()
-                .id(id)
+                .id(String.valueOf(id))
                 .subject(userName)
                 .issuedAt(new Date(System.currentTimeMillis()));
 

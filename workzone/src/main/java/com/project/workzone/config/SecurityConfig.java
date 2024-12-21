@@ -6,11 +6,14 @@ import com.project.workzone.security.UsernameEmailPasswordAuthenticationFilter;
 import com.project.workzone.security.UsernameEmailPasswordAuthenticationProvider;
 import com.project.workzone.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,11 +36,7 @@ public class SecurityConfig {
     private final CustomCorsConfiguration corsConfiguration;
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        return new UsernameEmailPasswordAuthenticationProvider();
-    }
-
-    @Bean
+    @Primary
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
@@ -68,7 +67,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtAuthenticationFilter jwtAuthenticationFilter,
-                                                   UsernameEmailPasswordAuthenticationFilter usernameEmailPasswordAuthenticationFilter) throws Exception {
+                                                   AuthenticationManager authenticationManager,
+                                                   UsernameEmailPasswordAuthenticationFilter usernameEmailPasswordAuthenticationFilter,
+                                                   UsernameEmailPasswordAuthenticationProvider authenticationProvider) throws Exception {
         http
                 .cors(c -> c.configurationSource(corsConfiguration))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -80,7 +81,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .sessionFixation().none()
                 )
-                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(authenticationProvider)
                 .addFilterAt(usernameEmailPasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

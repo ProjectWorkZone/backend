@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@NoArgsConstructor(force = true)
 public class UsernameEmailPasswordAuthenticationProvider implements AuthenticationProvider {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -44,6 +43,6 @@ public class UsernameEmailPasswordAuthenticationProvider implements Authenticati
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return UsernameEmailPasswordAuthenticationToken.class.isAssignableFrom(authentication);
+       return UsernameEmailPasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 }
