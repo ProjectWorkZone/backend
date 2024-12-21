@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends Audit implements UserDetails {
+public class User extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -56,31 +56,35 @@ public class User extends Audit implements UserDetails {
         BANNED
     }
 
-    @Override
-    public Set<GrantedAuthority> getAuthorities() {
+    public Set<GrantedAuthority> getRoles() {
         return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-//        return this.accountNonExpired;
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.status == Status.ACTIVE;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-//        return this.credentialsNonExpired;
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.isEnabled;
-    }
+//    @Override
+//    public Set<GrantedAuthority> getAuthorities() {
+//        return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
+//    }
+//
+//    @Override
+//    public boolean isAccountNonExpired() {
+////        return this.accountNonExpired;
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return this.status == Status.ACTIVE;
+//    }
+//
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+////        return this.credentialsNonExpired;
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isEnabled() {
+//        return this.isEnabled;
+//    }
 
 }

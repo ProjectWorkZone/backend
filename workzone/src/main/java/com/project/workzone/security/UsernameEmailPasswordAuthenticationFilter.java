@@ -1,7 +1,7 @@
 package com.project.workzone.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.workzone.controller.AuthenticationController;
+import com.project.workzone.controller.AuthController;
 import com.project.workzone.dto.signIn.SignInRequest;
 import com.project.workzone.model.UsernameEmailPasswordAuthenticationToken;
 import jakarta.servlet.FilterChain;
@@ -26,7 +26,7 @@ import static com.project.workzone.constants.HTTPConstants.SIGN_IN_URL;
 @Component
 public class UsernameEmailPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Autowired
-    private AuthenticationController authenticationController;
+    private AuthController authController;
 
     public UsernameEmailPasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
@@ -60,7 +60,7 @@ public class UsernameEmailPasswordAuthenticationFilter extends UsernamePasswordA
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
-        ResponseEntity<?> responseEntity = authenticationController.authenticateUser(null, response);
+        ResponseEntity<?> responseEntity = authController.authenticateUser(response);
 
         response.setContentType(CONTENT_TYPE);
         response.setStatus(responseEntity.getStatusCode().value());
