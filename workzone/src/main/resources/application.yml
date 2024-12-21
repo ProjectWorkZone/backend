@@ -1,0 +1,53 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+      show_sql: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        sql: DEBUG
+      springframework:
+        web:
+          servlet:
+            DispatcherServlet: DEBUG
+springdoc:
+  packages-to-scan: com.project.workzone.controller
+  default-consumes-media-type: application/json;charset-UTF-8
+  default-produces-media-type: application/json;charset-UTF-8
+  swagger-ui:
+    path: /api-docs
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+
+jwt:
+  secret: 0729ebfb0e81d074921d234a6383ed172aabb52a6f302b5e687588e17499ef937134c3beab9aa1c930232fe42c69ce1091303cb23f8d79a0b33497469c9f136691659dd29c14ac3b7f006597d7613511fa5efcee4cd21e291cb53ea6ff346fcc70b593b9760739048289ffe267e07c8bf379ec80a8cc7e689fde2853a8eea1307d11f2fa66c2f01b352ace678373e8d075048c5f40d3e266b36759d515b97282330159603070ff33a4d1ee5486e6051df3683f84c719ddf04e4f7f43efd145ff59326d9e72cf551dd0ca233f7409e8f2db6edc8384aee374d55f92fb97f4aa4a7db051f1b945e60297e53662e980cdf250f2baf08c59dfb669050e3f2c612b22
+  expiration:
+    access: 900000
+    refresh: 604800000
+
+---
+
+spring:
+  profiles:
+    active: prd
+
+---
+
+spring:
+  profiles:
+    active: dev
+
+---
+
+spring:
+  profiles:
+    active: local

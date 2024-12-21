@@ -1,0 +1,29 @@
+services:
+  dev-backend:
+    container_name: dev-wz
+    restart: always
+    build:
+      context: ./workzone
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  dev-mysql:
+    container_name: dev-wz-mysql
+    image: mysql:latest
+    platform: linux/x86_64
+    restart: always
+    cap_add:
+      - SYS_NICE
+    environment:
+      MYSQL_DATABASE: wz
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3308:3306"
+
+
