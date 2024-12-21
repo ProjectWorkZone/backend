@@ -2,7 +2,6 @@ package com.project.workzone.controller;
 
 import com.project.workzone.dto.signIn.SignInRequest;
 import com.project.workzone.dto.signUp.SignUpRequest;
-import com.project.workzone.dto.signUp.SignUpResponse;
 import com.project.workzone.dto.token.AccessTokenResponse;
 import com.project.workzone.model.User;
 import com.project.workzone.model.UsernameEmailPasswordAuthenticationToken;
@@ -12,7 +11,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,8 +24,6 @@ import java.io.IOException;
 import static com.project.workzone.constants.HTTPConstants.*;
 import static com.project.workzone.model.common.TokenType.ACCESS_TOKEN;
 import static com.project.workzone.model.common.TokenType.REFRESH_TOKEN;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,31 +36,8 @@ public class AuthenticationController {
     private final JwtUtils jwtUtils;
 
     @PostMapping(SIGN_UP_URL)
-    public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signupRequest, HttpServletResponse response) {
-        if (userService.existsByUsername(signupRequest.getUsername())) {
-            return ResponseEntity
-                    .status(BAD_REQUEST)
-                    .contentType(APPLICATION_JSON)
-                    .body("Error: Username is already taken!");
-
-        }
-
-        if (userService.existsByEmail(signupRequest.getEmail())) {
-            return ResponseEntity
-                    .status(BAD_REQUEST)
-                    .contentType(APPLICATION_JSON)
-                    .body("Error: Email is already in use!");
-        }
-
-        User user = new User();
-        user.setUsername(signupRequest.getUsername());
-        user.setEmail(signupRequest.getEmail());
-        user.setPassword(signupRequest.getPassword());
-        user.setEnabled(true);
-
-        User savedUser = userService.saveUser(user);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(new SignUpResponse(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail()));
+    public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signupRequest) {
+        return userService.saveUser(signupRequest);
     }
 
     @PostMapping(SIGN_IN_URL)
