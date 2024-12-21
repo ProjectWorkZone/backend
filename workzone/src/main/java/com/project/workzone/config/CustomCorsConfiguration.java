@@ -15,6 +15,7 @@ public class CustomCorsConfiguration implements CorsConfigurationSource {
         config.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
         return config;
     }
 }

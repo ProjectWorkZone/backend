@@ -2,8 +2,12 @@ package com.project.workzone.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.workzone.model.common.Audit;
+import com.project.workzone.model.common.Gender;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,11 +49,6 @@ public class User extends Audit implements UserDetails {
 //    private boolean accountNonExpired;
 //    private boolean credentialsNonExpired;
     private boolean isEnabled;
-
-    public enum Gender {
-        MALE,
-        FEMALE
-    }
 
     public enum Status {
         ACTIVE,
