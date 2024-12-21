@@ -3,7 +3,6 @@ package com.project.workzone.controller;
 import com.project.workzone.dto.signIn.SignInRequest;
 import com.project.workzone.dto.signUp.SignUpRequest;
 import com.project.workzone.dto.token.AccessTokenResponse;
-import com.project.workzone.model.User;
 import com.project.workzone.model.UsernameEmailPasswordAuthenticationToken;
 import com.project.workzone.security.JwtUtils;
 import com.project.workzone.service.UserService;
@@ -12,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,14 +40,12 @@ public class AuthenticationController {
 
     @PostMapping(SIGN_IN_URL)
     public ResponseEntity<?> authenticateUser(@RequestBody SignInRequest signInRequest, HttpServletResponse response) {
-        try{
-//            UsernameEmailPasswordAuthenticationToken authentication = (UsernameEmailPasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User userDetails = (User) authentication.getPrincipal();
-            String accessToken = jwtUtils.generateToken(userDetails, ACCESS_TOKEN);
-            String refreshToken = jwtUtils.generateToken(userDetails, REFRESH_TOKEN);
+            UsernameEmailPasswordAuthenticationToken authentication = (UsernameEmailPasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
-            userService.updateTokens(userDetails.getId(), accessToken, refreshToken);
+            String accessToken = jwtUtils.generateToken(authentication, ACCESS_TOKEN);
+            String refreshToken = jwtUtils.generateToken(authentication, REFRESH_TOKEN);
+
+            userService.updateTokens(authentication.getId(), accessToken, refreshToken);
 
             Cookie refreshTokenCookie = new Cookie(REFRESH_COOKIE, refreshToken);
             refreshTokenCookie.setHttpOnly(true);
@@ -57,30 +53,23 @@ public class AuthenticationController {
             refreshTokenCookie.setPath("/");
             refreshTokenCookie.setMaxAge(refreshTokenExpiration);
             response.addCookie(refreshTokenCookie);
+
             return ResponseEntity.ok(new AccessTokenResponse(accessToken, accessTokenExpiration));
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-
-
-        return null;
     }
 
     @GetMapping(REFRESH_TOKEN_URL)
     public ResponseEntity<?> refreshToken() {
         UsernameEmailPasswordAuthenticationToken authentication = (UsernameEmailPasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        String userId = String.valueOf(authentication.getId());
-        String username = authentication.getPrincipal().toString();
-        String accessToken = jwtUtils.generateToken(userId, username, ACCESS_TOKEN);
-        userService.updateAccessToken(Long.parseLong(userId), accessToken);
+
+        String accessToken = jwtUtils.generateToken(authentication, ACCESS_TOKEN);
+        userService.updateAccessToken(authentication.getId(), accessToken);
 
         return ResponseEntity.ok(new AccessTokenResponse(accessToken, accessTokenExpiration));
     }
 
     @PostMapping(SIGN_OUT_URL)
     public ResponseEntity<?> logoutUser(HttpServletResponse response) throws IOException {
-        UsernameEmailPasswordAuthenticationToken token = ((UsernameEmailPasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication());
-        Long userId = token.getId();
+        Long userId = ((UsernameEmailPasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getId();
         userService.deleteTokens(userId);
 
         Cookie refreshTokenCookie = new Cookie(REFRESH_COOKIE, null);
