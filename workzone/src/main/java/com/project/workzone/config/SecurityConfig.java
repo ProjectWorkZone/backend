@@ -4,16 +4,11 @@ import com.project.workzone.security.JwtAuthenticationFilter;
 import com.project.workzone.security.JwtUtils;
 import com.project.workzone.security.UsernameEmailPasswordAuthenticationFilter;
 import com.project.workzone.security.UsernameEmailPasswordAuthenticationProvider;
-import com.project.workzone.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,14 +42,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtUtils jwtUtils(@Value("${jwt.secret}") String secretKey,
-                             @Value("${jwt.expiration.access}") int accessTokenValidityInSeconds,
-                             @Value("${jwt.expiration.refresh}") int refreshTokenValidityInSeconds,
-                             UserService userService) {
-        return new JwtUtils(secretKey, accessTokenValidityInSeconds, refreshTokenValidityInSeconds, userService);
-    }
-
-    @Bean
     public UsernameEmailPasswordAuthenticationFilter usernameEmailPasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
         return new UsernameEmailPasswordAuthenticationFilter(authenticationManager);
     }
@@ -67,7 +54,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtAuthenticationFilter jwtAuthenticationFilter,
-                                                   AuthenticationManager authenticationManager,
                                                    UsernameEmailPasswordAuthenticationFilter usernameEmailPasswordAuthenticationFilter,
                                                    UsernameEmailPasswordAuthenticationProvider authenticationProvider) throws Exception {
         http
@@ -79,7 +65,6 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        .sessionFixation().none()
                 )
                 .authenticationProvider(authenticationProvider)
                 .addFilterAt(usernameEmailPasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

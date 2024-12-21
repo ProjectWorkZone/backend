@@ -3,7 +3,6 @@ package com.project.workzone.security;
 import com.project.workzone.model.User;
 import com.project.workzone.model.UsernameEmailPasswordAuthenticationToken;
 import com.project.workzone.service.UserService;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -38,7 +37,7 @@ public class UsernameEmailPasswordAuthenticationProvider implements Authenticati
         if (!passwordEncoder.matches(credentials, user.getPassword())) {
             throw new AuthenticationServiceException("Invalid username/email or password");
         }
-        return new UsernameEmailPasswordAuthenticationToken(user.getId(), user.getUsername(), user.getAuthorities());
+        return new UsernameEmailPasswordAuthenticationToken(user.getId(), user.getUsername(), user.getRoles());
     }
 
     @Override

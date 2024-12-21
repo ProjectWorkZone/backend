@@ -9,8 +9,7 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -21,7 +20,6 @@ import static com.project.workzone.model.common.TokenType.ACCESS_TOKEN;
 import static com.project.workzone.model.common.TokenType.REFRESH_TOKEN;
 
 @Component
-@RequiredArgsConstructor
 public class JwtUtils {
     private final int accessTokenValidityInSeconds;
     private final int refreshTokenValidityInSeconds;
@@ -30,8 +28,8 @@ public class JwtUtils {
 
     private final UserService userService;
 
-    @Autowired
-    public JwtUtils(String secretKey, int accessTokenValidityInSeconds, int refreshTokenValidityInSeconds,  UserService userService) {
+
+    public JwtUtils(@Value("${jwt.secret}") String secretKey, @Value("${jwt.expiration.access}") int accessTokenValidityInSeconds, @Value("${jwt.expiration.refresh}") int refreshTokenValidityInSeconds, UserService userService) {
         this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
         this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
         this.signingKey = Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -87,7 +85,7 @@ public class JwtUtils {
             throw new JwtException("JWT token does not exist");
         }
 
-        return new UsernameEmailPasswordAuthenticationToken(Long.valueOf(jwtPayload.getId()), jwtPayload.getSubject(), user.getAuthorities());
+        return new UsernameEmailPasswordAuthenticationToken(Long.valueOf(jwtPayload.getId()), jwtPayload.getSubject(), user.getRoles());
     }
 
 }
